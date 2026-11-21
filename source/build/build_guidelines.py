@@ -416,14 +416,16 @@ def p_hubs():
     e, bb = embed(ROOT / "maps/hub-network/parcelfly-hub-map-square-dark.svg", M, 34, w=136, h=136)
     pg.add(e)
     x = M + 146
-    pg.add(LY.label("Five hubs", x, 40, 2.6, SKY))
-    for i, h_ in enumerate(MP.hubs()):
-        y = 49 + i * 9.2
-        pg.add(LY.parcel(x + 2.2, y - 1.3, 2.1, NAVY))
-        pg.add(LY.parcel(x + 2.2, y - 1.3, 0.9, CYAN))
-        pg.add(T.text(f"{h_['name']} Hub", "montserrat", 3.4, x + 6.5, y, NAVY, "start", 800))
-        pg.add(T.text(f"{h_['name_bn']} হাব", "mina-bold", 3.0, x + 6.5, y + 3.9, SKY))
-    text_block(pg, x, 103, 118, [
+    pg.add(LY.label(f"{MP.hub_count_word()} hubs", x, 40, 2.6, SKY))
+    hs_ = MP.hubs()
+    rows = (len(hs_) + 1) // 2                         # two columns, so the list stays short as hubs are added
+    for i, h_ in enumerate(hs_):
+        hx, y = x + (i // rows) * 58, 49 + (i % rows) * 9.2
+        pg.add(LY.parcel(hx + 2.2, y - 1.3, 2.1, NAVY))
+        pg.add(LY.parcel(hx + 2.2, y - 1.3, 0.9, CYAN))
+        pg.add(T.text(f"{h_['name']} Hub", "montserrat", 3.4, hx + 6.5, y, NAVY, "start", 800))
+        pg.add(T.text(f"{h_['name_bn']} হাব", "mina-bold", 3.0, hx + 6.5, y + 3.9, SKY))
+    text_block(pg, x, 49 + (rows - 1) * 9.2 + 15, 118, [
         ("Real geography", "Rivers, water and roads come from OpenStreetMap; the Bangladesh outline and rivers from "
                            "Natural Earth. Rebuild maps with source/build/build_maps.py, never redraw them by hand."),
         ("Credit", "Keep \"© OpenStreetMap contributors\" visible on every map (the files include it)."),
@@ -606,7 +608,7 @@ def p_apparel():
     grid_embed(pg, ["signage/signboard/parcelfly-signboard-mirpur-hub.svg"], M + 66, 36, 1, 132, 44)
     grid_embed(pg, ["signage/roll-up/parcelfly-rollup-850x2000.svg", "signage/flyer/parcelfly-flyer-a5-front.svg",
                     "signage/flyer/parcelfly-flyer-a5-back.svg"], 220, 36, 3, 18, 42, gap=2)
-    pg.add(T.text("Signboards 2400 x 800 mm (generic and one for each of the five hubs), roll-up 850 x 2000 mm, A5 flyer, "
+    pg.add(T.text(f"Signboards 2400 x 800 mm (generic and one for each of the {MP.hub_count_word().lower()} hubs), roll-up 850 x 2000 mm, A5 flyer, "
                   "T-shirt chest and back prints, cap embroidery.", "montserrat", 2.6, M, 118, SLATE, "start", 500))
     return pg
 

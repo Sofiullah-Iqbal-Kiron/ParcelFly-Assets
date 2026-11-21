@@ -130,8 +130,7 @@ def cover_merchant(w, h, safe):
     return d
 
 
-_NS = [h_["name"] for h_ in sorted(MP.hubs(), key=lambda h_: -h_["lat"])]   # north to south, from source/geo/hubs.json
-HUB_LINE = f"{', '.join(_NS[:-1])} and {_NS[-1]} hubs keep us close to your customers."
+HUB_LINE = MP.hub_line()          # every hub, north to south, from source/geo/hubs.json
 
 
 def cover_coverage(w, h, safe):
@@ -141,16 +140,17 @@ def cover_coverage(w, h, safe):
     wide = sw / sh > 4.5
     mx = sx + sw * (0.5 if wide else 0.46)
     my, mh = (sy, sh) if sh < h * 0.6 else (0, h)   # YouTube: only the 1546 x 423 band is visible everywhere
+    fade_w = (w - mx) * 0.18
     d.add(MP.hub_map(mx, my, w - mx, mh, "dark", labels="en" if wide else "both", inset=False, clip_id="cov",
                      label_size=min(sh * (0.11 if wide else 0.045), 40), node_size=sh * (0.035 if wide else 0.02),
-                     extent=MP.hub_extent(pad=0.16 if wide else 0.2), attribution=False))
+                     attribution=False, avoid=[(mx, my, mx + fade_w, my + mh)]))
     # OpenStreetMap credit inside the safe zone so no platform crop can hide it
     asz = max(min(sh * 0.035, 14), 7)
     d.add(T.text("Map: " + MP.ATTRIBUTION, "montserrat", asz, sx, sy + sh - asz * 0.2, "#8FA3E8", "start", 500))
     # soft hand-over from the text area into the map
     gid = SC.uid("cf")
     d.defs_add(f'<linearGradient id="{gid}"><stop offset="0" stop-color="{NAVY}"/><stop offset="1" stop-color="{NAVY}" stop-opacity="0"/></linearGradient>')
-    d.rect(mx - 1, 0, (w - mx) * 0.18, h, f"url(#{gid})")
+    d.rect(mx - 1, 0, fade_w, h, f"url(#{gid})")
     if wide:
         frag, bb = LY.place_logo("horizontal", "ondark", sx, sy, w=sw * 0.32, h=sh * 0.42, valign="middle")
         d.add(frag)
@@ -158,8 +158,16 @@ def cover_coverage(w, h, safe):
     frag, bb = LY.place_logo("horizontal", "ondark", sx, sy, w=sw * 0.28, h=sh * 0.15)
     d.add(frag)
     tw = sw * 0.44
-    hs = min(sh * 0.12, T.fit_size("Five hubs across", "montserrat", tw, 300, 800))
-    hfrag, last = LY.heading("Five hubs across Dhaka and Narayanganj.", sx, sy + sh * 0.30 + hs, hs, WHITE, max_width=tw)
+    hs = min(sh * 0.12, T.fit_size(f"{MP.hub_count_word()} hubs across", "montserrat", tw, 300, 800))
+    top, bottom = sy + sh * 0.30, sy + sh - asz * 2.2          # the copy must end above the map credit
+    while hs > 8:
+        nh = len(T.wrap(MP.headline(), "montserrat", hs, tw, 800, tracking=-0.01))
+        ps = hs * 0.36
+        npl = len(T.wrap(HUB_LINE, "montserrat", ps, tw, 600))
+        if top + hs + (nh - 1) * hs * 1.1 + hs * 0.9 + (npl - 1) * ps * 1.45 + ps * 0.3 <= bottom:
+            break
+        hs *= 0.95
+    hfrag, last = LY.heading(MP.headline(), sx, top + hs, hs, WHITE, max_width=tw)
     d.add(hfrag)
     ps = hs * 0.36
     pfrag, _ = LY.para(HUB_LINE, sx, last + hs * 0.9, ps, CYAN, max_width=tw, weight=600)
@@ -446,14 +454,14 @@ def post_coverage(w, h):
     d = Doc(w, h, bg=NAVY, title="Parcel Fly: hub network")
     m = w * 0.074
     hs = w * 0.066
-    lines = T.wrap("Five hubs across Dhaka and Narayanganj.", "montserrat", hs, w - 2 * m, 800, tracking=-0.01)
+    lines = T.wrap(MP.headline(), "montserrat", hs, w - 2 * m, 800, tracking=-0.01)
     last = m + w * 0.12 + (len(lines) - 1) * hs * 1.1
     top = last + w * 0.05
-    d.add(MP.hub_map(0, top, w, h - top - w * 0.15, "dark", inset=False, clip_id="pc", label_size=w * 0.028,
-                     node_size=w * 0.016))
+    d.add(MP.hub_map(0, top, w, h - top - w * 0.15, "dark", labels="en", inset=False, clip_id="pc",
+                     label_size=w * 0.028, node_size=w * 0.016))
     d.rect(0, h - w * 0.15, w, w * 0.15, NAVY)
     d.add(LY.label("Hub network", m, m + w * 0.03, w * 0.03, CYAN))
-    hfrag, _ = LY.heading("Five hubs across Dhaka and Narayanganj.", m, m + w * 0.12, hs, WHITE, max_width=w - 2 * m)
+    hfrag, _ = LY.heading(MP.headline(), m, m + w * 0.12, hs, WHITE, max_width=w - 2 * m)
     d.add(hfrag)
     post_footer(d, w, h)
     return d
@@ -465,8 +473,8 @@ def post_hub(w, h, key):
     d = Doc(w, h, bg=NAVY, title=f"Parcel Fly {hb['name']} Hub")
     m = w * 0.074
     top = m + w * (0.33 if h / w < 1.2 else 0.36)
-    d.add(MP.hub_map(0, top, w, h - top - w * 0.15, "dark", highlight=key, inset=False, clip_id="ph",
-                     label_size=w * 0.028, node_size=w * 0.016))
+    d.add(MP.hub_map(0, top, w, h - top - w * 0.15, "dark", highlight=key, labels="en", inset=False, clip_id="ph",
+                     label_size=w * 0.028, node_size=w * 0.016))       # the Bangla name is in the headline
     d.rect(0, h - w * 0.15, w, w * 0.15, NAVY)
     d.add(LY.label("Parcel Fly hub", m, m + w * 0.03, w * 0.03, CYAN))
     hs = min(w * 0.11, T.fit_size(f"{hb['name']} Hub", "montserrat", w - 2 * m, 400, 800))
@@ -493,7 +501,7 @@ def story_hubs(key=None):
         b0, b1, b2, b3 = T.ink_bounds(f"{hb['name_bn']} হাব", "mina-bold", 70)
         d.add(T.text(f"{hb['name_bn']} হাব", "mina-bold", 70, m - b0, top_ui + 200 - b1, CYAN))
     else:
-        hfrag, last = LY.heading("Five hubs. One fast network.", m, top_ui + 150, 86, WHITE, max_width=w - 2 * m)
+        hfrag, last = LY.heading(f"{MP.hub_count_word()} hubs. One fast network.", m, top_ui + 150, 86, WHITE, max_width=w - 2 * m)
         d.add(hfrag)
     frag, bb = LY.place_logo("horizontal", "ondark", (w - 520) / 2, h - bottom_ui - 10, w=520)
     d.add(frag)
@@ -572,7 +580,7 @@ def post_wide(kind, w=1200, h=627):
         d.defs_add(f'<linearGradient id="{gid}"><stop offset="0" stop-color="{NAVY}"/><stop offset="1" stop-color="{NAVY}" stop-opacity="0"/></linearGradient>')
         d.rect(mx - 1, 0, w * 0.1, h, f"url(#{gid})")
         d.add(LY.label("Hub network", m, m + h * 0.03, h * 0.035, CYAN))
-        hfrag, last = LY.heading("Five hubs across Dhaka and Narayanganj.", m, m + h * 0.17, h * 0.075, WHITE,
+        hfrag, last = LY.heading(MP.headline(), m, m + h * 0.17, h * 0.075, WHITE,
                                  max_width=mx - m - w * 0.02)
         d.add(hfrag)
         pfrag, _ = LY.para(HUB_LINE, m, last + h * 0.09, h * 0.032, CYAN, max_width=mx - m - w * 0.03, weight=600)

@@ -25,8 +25,12 @@ logo-design skill's **Assets** and **System** modes only.
 - Icon schemes (`brand.ICON_SCHEMES`): brand/merchant navy tile, rider white tile, hub cyan tile, admin ink tile with
   amber parcel.
 - CMYK from FOGRA39 coated / FOGRA29 uncoated ICC profiles; Pantone values are nearest matches.
-- Five hubs (confirmed by the user on 2026-11-21): Bakshibazar, Jatrabari, Mirpur, Rampura, Narayanganj.
-  `source/geo/hubs.json` is the single source for hub names (English and Bangla) and positions; every hub asset reads it.
+- Six hubs (confirmed by the user on 2026-11-21): Bakshibazar, Jatrabari, Keraniganj, Mirpur, Rampura, Narayanganj.
+  Keraniganj is inside Dhaka District, so coverage copy says "Dhaka and Narayanganj" (`maps.AREAS`), never lists
+  Keraniganj as a separate area. `source/geo/hubs.json` is the single source for hub names (English and Bangla),
+  positions and label placement (`left`, `right`, `below`, optional `label_dy`); every hub asset and headline reads it.
+- Map framing (`maps.fit_extent`) keeps every pin and label inside the frame and clear of the inset, scale bar, credit
+  and any caller `avoid` zones; the build prints "map warning: labels collide" if two hubs' labels still overlap.
 - Maps are real geography (`pfbrand/maps.py`): OpenStreetMap layers in `source/geo/dhaka-region.json` (ODbL, the
   "© OpenStreetMap contributors" credit must stay visible on every map), Natural Earth for Bangladesh.
   `fetch_geo.py` refreshes the data; hub pins are area centres, not street addresses.

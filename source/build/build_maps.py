@@ -1,6 +1,6 @@
 """Hub network maps (real geography) and the Bangladesh map.
 
-maps/hub-network/   the five hubs, dark and light, square / landscape / portrait, English+Bangla / English / Bangla labels
+maps/hub-network/   every hub, dark and light, square / landscape / portrait, English+Bangla / English / Bangla labels
 maps/hubs/          one map per hub with that hub highlighted
 maps/bangladesh/    Bangladesh with major rivers, Dhaka and Narayanganj marked (Natural Earth)
 maps/poster/        A3 hub network poster (print)
@@ -61,12 +61,14 @@ def poster():
     frag, _ = LY.place_logo("horizontal", "color", 18, 18, w=96)
     d.add(frag)
     d.add(LY.label("Hub network", 18, 62, 4.2, SKY))
-    hfrag, last = LY.heading("Five hubs across Dhaka and Narayanganj.", 18, 78, 11, NAVY, max_width=118)
+    hfrag, last = LY.heading(MP.headline(), 18, 78, 11, NAVY, max_width=118)
     d.add(hfrag)
     y = last + 16
-    for i, h_ in enumerate(MP.hubs()):
-        yy = y + i * 17
-        d.add(LY.parcel(23, yy - 2.2, 3.6, [NAVY, NAVY, NAVY, NAVY, NAVY][i]))
+    hs_ = MP.hubs()
+    step = min(17.0, (H - 74 - 10 - y) / len(hs_))        # the list always ends above the QR block
+    for i, h_ in enumerate(hs_):
+        yy = y + i * step
+        d.add(LY.parcel(23, yy - 2.2, 3.6, NAVY))
         d.add(LY.parcel(23, yy - 2.2, 1.6, CYAN))
         d.add(T.text(f"{h_['name']} Hub", "montserrat", 6.0, 31, yy, NAVY, "start", 800))
         d.add(T.text(f"{h_['name_bn']} হাব", "mina-bold", 5.0, 31, yy + 6.2, SKY, "start"))

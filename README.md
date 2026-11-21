@@ -26,8 +26,8 @@ Start with **`guidelines/parcelfly-brand-guidelines.pdf`** (22 pages) and **`par
 | Shopping bags, totes, carry bags (to print) | `bags/print/` (paper bag dielines, tote and carry-bag artwork, rider backpack panels) |
 | Mockups of every physical item (bags, merch, stationery, packaging, stamps, stickers, apparel, signage) | `mockups/<area>/` (scenes as JPG + half-size previews; `cutouts/` = transparent PNG products) |
 | T-shirts, caps | `apparel/` |
-| Hub signboards, roll-up, flyer | `signage/` (a signboard for each of the five hubs) |
-| A map of the five hubs | `maps/hub-network/` (dark and light; square, landscape, portrait; English, Bangla or both) |
+| Hub signboards, roll-up, flyer | `signage/` (a signboard for each hub) |
+| A map of the hub network | `maps/hub-network/` (dark and light; square, landscape, portrait; English, Bangla or both) |
 | A map that highlights one hub | `maps/hubs/parcelfly-hub-map-<hub>-{dark,light}` |
 | A Bangladesh map (website, about pages) | `maps/bangladesh/` (transparent versions replace the website's hand-traced outline) |
 | A hub network poster | `maps/poster/parcelfly-hub-network-poster-a3.pdf` |
@@ -56,14 +56,18 @@ Start with **`guidelines/parcelfly-brand-guidelines.pdf`** (22 pages) and **`par
 
 ## Hubs and maps
 
-Five hubs: **Bakshibazar** (বকশীবাজার), **Jatrabari** (যাত্রাবাড়ী), **Mirpur** (মিরপুর), **Rampura** (রামপুরা) and
-**Narayanganj** (নারায়ণগঞ্জ). They appear on real maps, hub signboards, hub stamps, the shipping label (tick-box per
-hub), social posts and stories, and the A3 poster.
+Six hubs across Dhaka and Narayanganj: **Bakshibazar** (বকশীবাজার), **Jatrabari** (যাত্রাবাড়ী), **Keraniganj**
+(কেরানীগঞ্জ, in Dhaka District, across the Buriganga), **Mirpur** (মিরপুর), **Rampura** (রামপুরা) and **Narayanganj**
+(নারায়ণগঞ্জ). They appear on real maps, hub signboards, hub stamps, the shipping label (tick-box per hub), social posts
+and stories, store-front mockups, wallpapers and the A3 poster.
 
 - The maps use real geography: rivers, water and roads from OpenStreetMap, and the Bangladesh outline and rivers from
   Natural Earth. Keep the credit "© OpenStreetMap contributors" (already in every file) wherever a map is used.
 - Hub pins mark the neighbourhood (geocoded area centre), not the street address. When the exact addresses are known,
   edit the coordinates in `source/geo/hubs.json` and rebuild.
+- To add a hub, add it to `HUBS` in `source/build/fetch_geo.py` and to `source/geo/hubs.json` (key, names, position,
+  label side `left`, `right` or `below`, optional `label_dy`), then rebuild: every map, signboard, stamp, post, story,
+  label, wallpaper and mockup follows, and headlines count the hubs automatically.
 - To refresh the map data from OpenStreetMap: `.venv/bin/python source/build/fetch_geo.py --refresh`.
 
 ## Bags
@@ -120,7 +124,7 @@ desktop screen in `wallpapers/parcelfly-wallpapers-overview.jpg`.
 | Client | `dark`, `light` (delivery route: picked up, at the hub, on the way, delivered) |
 | Rider | `dark`, `light` (motion streaks, Bangla tagline, RIDER pill) |
 | Hub manager | `map` (light hub map with Bangla names, Hub lockup), `cyan` (hub colourway, HUB MANAGER pill) |
-| Staff | `dark`, `light` (TEAM PARCEL FLY, the five hubs) |
+| Staff | `dark`, `light` (TEAM PARCEL FLY, every hub) |
 | Admin | `console` (ink, amber admin colourway), `network` (ink hub map, amber network) |
 
 | Device | Sizes (px) |

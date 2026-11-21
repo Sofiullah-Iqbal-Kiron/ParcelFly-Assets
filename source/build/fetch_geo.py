@@ -26,12 +26,13 @@ UA = "parcelfly-brand-kit-map/1.0"
 BBOX = (23.48, 90.15, 23.98, 90.72)          # south, west, north, east (Dhaka to Narayanganj and around)
 INNER = (23.58, 90.28, 23.92, 90.58)         # secondary roads only here
 
-HUBS = [  # key, English, Bangla, geocoder query, label side
-    ("bakshibazar", "Bakshibazar", "বকশীবাজার", "Bakshibazar, Dhaka, Bangladesh", "left"),
+HUBS = [  # key, English, Bangla, geocoder query, label side (left, right or below the pin), optional label_dy
+    ("bakshibazar", "Bakshibazar", "বকশীবাজার", "Bakshibazar, Dhaka, Bangladesh", "left", -0.75),
     ("jatrabari", "Jatrabari", "যাত্রাবাড়ী", "Jatrabari, Dhaka, Bangladesh", "right"),
     ("mirpur", "Mirpur", "মিরপুর", "Mirpur, Dhaka, Bangladesh", "right"),
     ("rampura", "Rampura", "রামপুরা", "Rampura, Dhaka, Bangladesh", "right"),
     ("narayanganj", "Narayanganj", "নারায়ণগঞ্জ", "Narayanganj, Bangladesh", "left"),
+    ("keraniganj", "Keraniganj", "কেরানীগঞ্জ", "Keraniganj, Dhaka, Bangladesh", "below"),
 ]
 PREFER = {"suburb", "city", "town", "neighbourhood", "quarter", "bus_stop"}
 
@@ -62,7 +63,7 @@ def fetch(cache: Path, refresh: bool):
             (cache / f"q-{name}.txt").write_text(q)
             curl(["-X", "POST", "https://overpass-api.de/api/interpreter", "--data-urlencode", f"data@{cache / f'q-{name}.txt'}"], f)
             time.sleep(2)
-    for key, en, bn, q, side in HUBS:
+    for key, en, bn, q, side, *_ in HUBS:
         f = cache / f"geo-{key}.json"
         if refresh or not f.exists():
             curl(["-G", "https://nominatim.openstreetmap.org/search", "--data-urlencode", f"q={q}",
@@ -168,12 +169,15 @@ def process(cache: Path):
               "osm_timestamp": stamp, "water": poly_json(wat), "lines": out_lines, "rivers_named": river_names}
     # ---------------- hubs
     hubs = []
-    for key, en, bn, q, side in HUBS:
+    for key, en, bn, q, side, *dy in HUBS:
         res = json.loads((cache / f"geo-{key}.json").read_text())
         pick = next((r for r in res if r.get("type") in PREFER or r.get("addresstype") in PREFER), res[0])
-        hubs.append({"key": key, "name": en, "name_bn": bn, "lat": round(float(pick["lat"]), 5),
-                     "lon": round(float(pick["lon"]), 5), "label": side,
-                     "geocoded": f"Nominatim: {pick['display_name']}"})
+        hub_ = {"key": key, "name": en, "name_bn": bn, "lat": round(float(pick["lat"]), 5),
+                "lon": round(float(pick["lon"]), 5), "label": side}
+        if dy:
+            hub_["label_dy"] = dy[0]
+        hub_["geocoded"] = f"Nominatim: {pick['display_name']}"
+        hubs.append(hub_)
     # ---------------- Bangladesh (Natural Earth)
     ne = cache / "ne"
     countries = json.loads((ne / "ne_10m_admin_0_countries.geojson").read_text())
@@ -207,7 +211,7 @@ Pre-processed by `source/build/fetch_geo.py` on {datetime.date.today().isoformat
 | File | Contents | Source and licence |
 |---|---|---|
 | `dhaka-region.json` | Rivers and water bodies, major roads, railways for Dhaka to Narayanganj | OpenStreetMap contributors, ODbL 1.0 |
-| `hubs.json` | The five Parcel Fly hub areas (area centroids, not street addresses) | Geocoded with OpenStreetMap Nominatim |
+| `hubs.json` | The Parcel Fly hub areas (area centroids, not street addresses) | Geocoded with OpenStreetMap Nominatim |
 | `bangladesh.json` | Bangladesh outline and major rivers | Natural Earth 1:10m, public domain |
 
 Every map built from OpenStreetMap data must show the credit "© OpenStreetMap contributors" (the build adds it).

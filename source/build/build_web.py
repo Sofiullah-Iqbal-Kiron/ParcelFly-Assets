@@ -24,8 +24,7 @@ BANNERS = {
     "become-a-merchant": dict(label="For Dhaka merchants", head="Delivery that keeps up with your business.",
                               sub="Fast, careful and trackable parcel delivery across Dhaka for online sellers, food "
                                   "businesses and growing local brands.", cta="Become a merchant", art="symbol"),
-    "hub-network": dict(label="Hub network", head="Five hubs across Dhaka and Narayanganj.",
-                        sub="Mirpur, Rampura, Bakshibazar, Jatrabari and Narayanganj hubs keep us close to your customers.",
+    "hub-network": dict(label="Hub network", head=MP.headline(), sub=MP.hub_line(),
                         cta="See coverage areas", art="map"),
     "cash-on-delivery": dict(label="Cash on delivery", head="Cash on delivery, visible in your account.",
                              sub="Offer customers the payment experience they know while keeping COD and receivables "

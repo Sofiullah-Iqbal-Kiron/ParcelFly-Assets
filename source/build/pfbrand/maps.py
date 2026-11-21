@@ -1,4 +1,4 @@
-"""Realistic brand maps: the five Parcel Fly hubs on real Dhaka to Narayanganj geography (OpenStreetMap), and a
+"""Realistic brand maps: the Parcel Fly hubs on real Dhaka to Narayanganj geography (OpenStreetMap), and a
 Bangladesh map (Natural Earth). Everything is drawn as SVG paths in the brand palette."""
 import json
 import math
@@ -31,7 +31,9 @@ STYLES = {
 
 # a loop through the four city hubs plus the Narayanganj spur
 EDGES = [("mirpur", "rampura"), ("rampura", "jatrabari"), ("jatrabari", "bakshibazar"), ("bakshibazar", "mirpur"),
-         ("jatrabari", "narayanganj")]
+         ("jatrabari", "narayanganj"), ("bakshibazar", "keraniganj")]
+NUMBER_WORDS = {3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}
+AREAS = "Dhaka and Narayanganj"      # the two districts the hubs are in (Keraniganj is inside Dhaka District)
 
 RIVER_LABELS = {"Buriganga River": "Buriganga", "Turag River": "Turag", "Balu River": "Balu",
                 "Meghna River": "Meghna", "Dhaleshwari River": "Dhaleshwari"}
@@ -52,6 +54,21 @@ def hubs():
 @lru_cache(maxsize=None)
 def country():
     return json.loads((GEO / "bangladesh.json").read_text(encoding="utf-8"))
+
+
+def hub_count_word():
+    return NUMBER_WORDS[len(hubs())]
+
+
+def headline():
+    """'Six hubs across Dhaka and Narayanganj.' (count from hubs.json)."""
+    return f"{hub_count_word()} hubs across {AREAS}."
+
+
+def hub_line():
+    """Every hub, north to south: '..., Keraniganj and Narayanganj hubs keep us close to your customers.'"""
+    ns = [h["name"] for h in sorted(hubs(), key=lambda h: -h["lat"])]
+    return f"{', '.join(ns[:-1])} and {ns[-1]} hubs keep us close to your customers."
 
 
 def hub(key):
@@ -94,6 +111,127 @@ def hub_extent(keys=None, pad=0.22):
     return (min(lons) - dn * pad, min(lats) - dl * pad, max(lons) + dn * pad, max(lats) + dl * pad)
 
 
+def _label_layout(h_, px, py, r, size, labels, suffix):
+    """Where a hub label goes. Sides: 'left', 'right' (beside the node) or 'below' (centred under it); an optional
+    'label_dy' in hubs.json moves it up (negative) or down in label sizes, for pins that sit close together.
+    Returns (anchor, x, English baseline, Bangla baseline, Bangla size, box incl. halo)."""
+    side = h_.get("label", "right")
+    py = py + h_.get("label_dy", 0.0) * size          # optional nudge from hubs.json (in label sizes)
+    bs = size * (0.86 if labels == "both" else 1.05)
+    wl = 0.0
+    if labels in ("en", "both"):
+        wl = T.advance(h_["name"] + suffix, "montserrat", size, 800)
+    if labels in ("bn", "both"):
+        wl = max(wl, T.advance(h_["name_bn"] + (" হাব" if suffix else ""), "mina-bold", bs))
+    halo = size * 0.18
+    if side == "below":
+        anchor, tx = "middle", px
+        top = py + r * 1.75
+        ty = top + size * 0.74
+        by = ty + size * 1.05 if labels == "both" else top + bs * 0.78
+        box = (tx - wl / 2, top, tx + wl / 2, (ty if labels == "en" else by) + size * 0.35)
+    else:
+        anchor = "start" if side == "right" else "end"
+        tx = px + (r * 1.9 if side == "right" else -r * 1.9)
+        ty = py + size * 0.18
+        by = py + size * (1.2 if labels == "both" else 0.3)
+        x0, x1 = (tx, tx + wl) if side == "right" else (tx - wl, tx)
+        box = (x0, py - size * 0.7, x1, py + size * {"en": 0.35, "both": 1.55, "bn": 0.75}[labels])
+    return anchor, tx, ty, by, bs, (box[0] - halo, box[1] - halo, box[2] + halo, box[3] + halo)
+
+
+def _label_boxes(sc, hs, labels, ls, ns, suffix, highlight, lon0, lat1):
+    """[(hub index, box)] for every node and label at sc px per degree, relative to (lon0, lat1)."""
+    kx = math.cos(math.radians(23.72))
+    out = []
+    for i, h_ in enumerate(hs):
+        hi = highlight == h_["key"]
+        px, py = (h_["lon"] - lon0) * kx * sc, (lat1 - h_["lat"]) * sc
+        r = ns * (1.45 if hi else 1.0)
+        node = r * 1.38                                  # the pin's outer diamond (the soft glow may overlap)
+        out.append((i, (px - node, py - node, px + node, py + node)))
+        if labels:
+            out.append((i, _label_layout(h_, px, py, r, ls * (1.15 if hi else 1.0), labels, suffix)[5]))
+    return out
+
+
+def _clashes(bx, hs):
+    """Pairs of hubs whose labels overlap another hub's label or pin (pins tested by the square inside the diamond)."""
+    out = set()
+    for a, (i, p_) in enumerate(bx):
+        for b_, (j, q) in enumerate(bx):
+            if i == j or b_ <= a:
+                continue
+            pn, qn = a % 2 == 0, b_ % 2 == 0           # even entries are pins when labels are on
+            if pn and qn:
+                continue
+            if pn:
+                c, hlf = ((p_[0] + p_[2]) / 2, (p_[1] + p_[3]) / 2), (p_[2] - p_[0]) / 4
+                p_ = (c[0] - hlf, c[1] - hlf, c[0] + hlf, c[1] + hlf)
+            if qn:
+                c, hlf = ((q[0] + q[2]) / 2, (q[1] + q[3]) / 2), (q[2] - q[0]) / 4
+                q = (c[0] - hlf, c[1] - hlf, c[0] + hlf, c[1] + hlf)
+            if _overlap(p_, q):
+                out.add(tuple(sorted((hs[i]["key"], hs[j]["key"]))))
+    return sorted(out)
+
+
+def _overlap(p, q):
+    return p[0] < q[2] and p[2] > q[0] and p[1] < q[3] and p[3] > q[1]
+
+
+def fit_extent(x, y, w, h, labels="both", label_size=None, node_size=None, suffix=" Hub", highlight=None, keys=None,
+               avoid=(), margin=None, pad=0.22):
+    """Extent (with the box's aspect) that keeps every hub node and label inside the box and clear of `avoid` boxes
+    (inset, scale bar, credit). Never zooms in past the classic hub_extent framing: first slides the network within
+    the box, then zooms out only as far as the labels need. Prints a warning if labels of two hubs still collide."""
+    hs = [h_ for h_ in hubs() if keys is None or h_["key"] in keys]
+    kx = math.cos(math.radians(23.72))
+    unit = min(w, h)
+    ls = label_size or max(unit * 0.034, 2.0)
+    ns = node_size or unit * 0.022
+    m = unit * 0.035 if margin is None else margin
+    b = hub_extent(keys, pad)
+    s0 = min(w / ((b[2] - b[0]) * kx), h / (b[3] - b[1]))
+    lon0, lat1 = min(h_["lon"] for h_ in hs), max(h_["lat"] for h_ in hs)
+    grid = sorted(((fx, fy) for fx in (0, 0.25, 0.5, 0.75, 1) for fy in (0, 0.25, 0.5, 0.75, 1)),
+                  key=lambda t: (t[0] - 0.5) ** 2 + (t[1] - 0.5) ** 2)
+
+    def position(sc):
+        bx = _label_boxes(sc, hs, labels, ls, ns, suffix, highlight, lon0, lat1)
+        c0, c1 = min(q[1][0] for q in bx), min(q[1][1] for q in bx)
+        c2, c3 = max(q[1][2] for q in bx), max(q[1][3] for q in bx)
+        if c2 - c0 > w - 2 * m or c3 - c1 > h - 2 * m:
+            return None
+        lx, hx = x + m - c0, x + w - m - c2
+        ly, hy = y + m - c1, y + h - m - c3
+        for fx, fy in grid:
+            ox, oy = lx + (hx - lx) * fx, ly + (hy - ly) * fy
+            if not any(_overlap((q[0] + ox, q[1] + oy, q[2] + ox, q[3] + oy), a) for _, q in bx for a in avoid):
+                return ox, oy
+        return None
+
+    sc, pos = s0, position(s0)
+    if pos is None:
+        lo, hi = s0 * 0.05, s0
+        for _ in range(48):
+            mid = (lo + hi) / 2
+            if position(mid) is not None:
+                lo = mid
+            else:
+                hi = mid
+        sc, pos = lo, position(lo)
+    ox, oy = pos
+    bx = _label_boxes(sc, hs, labels, ls, ns, suffix, highlight, lon0, lat1)
+    clash = _clashes(bx, hs) if labels else []
+    if clash:
+        print(f"  map warning: labels collide {clash} in a {w:.0f} x {h:.0f} map")
+    clon = lon0 - (ox - (x + w / 2)) / (kx * sc)
+    clat = lat1 + (oy - (y + h / 2)) / sc
+    hw, hh = w / 2 / (kx * sc), h / 2 / sc
+    return (clon - hw, clat - hh, clon + hw, clat + hh)
+
+
 def halo_text(s, key, size, x, y, fill, halo, anchor="start", weight=None, sw=None, tracking=0.0):
     d, adv = T.path_d(s, key, size, x, y, anchor, weight, tracking=tracking)
     sw = sw if sw is not None else size * 0.32
@@ -103,14 +241,23 @@ def halo_text(s, key, size, x, y, fill, halo, anchor="start", weight=None, sw=No
 
 def hub_map(x, y, w, h, style="dark", extent=None, highlight=None, labels="both", label_size=None, network=True,
             inset=True, scalebar=False, attribution=True, rivers=True, fade=True, clip_id="mapclip", node_size=None,
-            hub_suffix=" Hub", only=None):
+            hub_suffix=" Hub", only=None, avoid=()):
     """The hub network map inside the box (x, y, w, h). Returns an SVG fragment (defs included)."""
     st = STYLES[style]
-    extent = extent or hub_extent()
-    p = Proj(x, y, w, h, extent)
-    reg = region()
     unit = min(w, h)
     ls = label_size or max(unit * 0.034, 2.0)
+    if extent is None:
+        avoid = list(avoid)                       # caller's keep-clear zones (text fades, overlays) plus our own
+        if inset:
+            isz = unit * 0.24
+            avoid.append((x + w - isz - unit * 0.03, y + unit * 0.03, x + w - unit * 0.03, y + unit * 0.03 + isz * 1.18))
+        if scalebar:
+            avoid.append((x + unit * 0.03, y + h - unit * 0.09, x + unit * 0.32, y + h - unit * 0.02))
+        if attribution:
+            avoid.append((x + w - unit * 0.36, y + h - unit * 0.045, x + w, y + h))
+        extent = fit_extent(x, y, w, h, labels, ls, node_size or unit * 0.022, hub_suffix, highlight, only, avoid)
+    p = Proj(x, y, w, h, extent)
+    reg = region()
     out = [f'<clipPath id="{clip_id}"><rect x="{fmt(x)}" y="{fmt(y)}" width="{fmt(w)}" height="{fmt(h)}"/></clipPath>',
            f'<g clip-path="url(#{clip_id})">',
            f'<rect x="{fmt(x)}" y="{fmt(y)}" width="{fmt(w)}" height="{fmt(h)}" fill="{st["bg"]}"/>']
@@ -141,14 +288,9 @@ def hub_map(x, y, w, h, style="dark", extent=None, highlight=None, labels="both"
         r = ns0 * 1.6
         obstacles.append((px - r, py - r, px + r, py + r))
         if labels:
-            size = ls * (1.15 if highlight == h_["key"] else 1.0)
-            wlab = max(T.advance(h_["name"] + hub_suffix, "montserrat", size, 800) if labels in ("en", "both") else 0,
-                       T.advance(h_["name_bn"] + " হাব", "mina-bold", size * 0.86) if labels in ("bn", "both") else 0)
-            y0b, y1b = py - size * 0.75, py + size * (1.45 if labels == "both" else 0.4)
-            if h_.get("label", "right") == "right":
-                obstacles.append((px + ns0 * 1.6, y0b, px + ns0 * 1.9 + wlab, y1b))
-            else:
-                obstacles.append((px - ns0 * 1.9 - wlab, y0b, px - ns0 * 1.6, y1b))
+            hi_ = highlight == h_["key"]
+            obstacles.append(_label_layout(h_, px, py, ns0 * (1.45 if hi_ else 1.0), ls * (1.15 if hi_ else 1.0),
+                                           labels, hub_suffix)[5])
     if inset:
         isz = unit * 0.24
         obstacles.append((x + w - isz - unit * 0.03, y + unit * 0.03, x + w - unit * 0.03, y + unit * 0.03 + isz * 1.18))
@@ -192,17 +334,12 @@ def hub_map(x, y, w, h, style="dark", extent=None, highlight=None, labels="both"
         out.append(LY.parcel(px, py, r * 1.38, st["ring"], 0.5 if dim else 1.0))
         out.append(LY.parcel(px, py, r, st["node"], 0.6 if dim else 1.0))
         if labels:
-            side = h_.get("label", "right")
-            anchor = "start" if side == "right" else "end"
-            tx = px + (r * 1.9 if side == "right" else -r * 1.9)
             size = ls * (1.15 if hi else 1.0)
+            anchor, tx, ty, by, bs, _ = _label_layout(h_, px, py, r, size, labels, hub_suffix)
             op_fill = st["label"] if not dim else st["muted"]
             if labels in ("en", "both"):
-                out.append(halo_text(h_["name"] + hub_suffix, "montserrat", size, tx, py + size * 0.18, op_fill,
-                                     st["halo"], anchor, 800))
+                out.append(halo_text(h_["name"] + hub_suffix, "montserrat", size, tx, ty, op_fill, st["halo"], anchor, 800))
             if labels in ("bn", "both"):
-                bs = size * (0.86 if labels == "both" else 1.05)
-                by = py + size * (1.2 if labels == "both" else 0.3)
                 out.append(halo_text(h_["name_bn"] + (" হাব" if hub_suffix else ""), "mina-bold", bs, tx, by,
                                      st["label_bn"] if not dim else st["muted"], st["halo"], anchor))
     if inset:

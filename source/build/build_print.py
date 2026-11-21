@@ -259,13 +259,22 @@ def shipping_label():
     box(m, 48, bw, 13, "COD", "৳")
     box(m + bw, 48, bw, 13, "WEIGHT (KG)")
     box(m + 2 * bw, 48, bw, 13, "DATE")
-    # destination hub: tick one (the five Parcel Fly hubs)
-    d.add(T.text("HUB", "montserrat", 2.1, m, 66.2, K, "start", 900, tracking=0.12))
-    hx = m + 9.5
+    # destination hub: tick one (every Parcel Fly hub, from hubs.json; wraps to a second row when needed)
+    rows, cur, x_ = [[]], 0.0, m + 9.5
     for hb in MP.hubs():
-        d.add(f'<rect x="{fmt(hx)}" y="63.9" width="2.6" height="2.6" fill="none" stroke="{K}" stroke-width="0.3"/>')
-        d.add(T.text(hb["name"], "montserrat", 1.95, hx + 3.4, 66.1, K, "start", 700))
-        hx += 3.4 + T.advance(hb["name"], "montserrat", 1.95, 700) + 2.4
+        wbox = 3.4 + T.advance(hb["name"], "montserrat", 1.95, 700) + 2.4
+        if rows[-1] and x_ + wbox - 2.4 > W - m:
+            rows.append([])
+            x_ = m + 9.5
+        rows[-1].append((hb, x_))
+        x_ += wbox
+    y0 = 63.9 if len(rows) == 1 else 62.4
+    d.add(T.text("HUB", "montserrat", 2.1, m, y0 + 2.3, K, "start", 900, tracking=0.12))
+    for r_i, row_ in enumerate(rows):
+        yb = y0 + r_i * 3.9
+        for hb, hx in row_:
+            d.add(f'<rect x="{fmt(hx)}" y="{fmt(yb)}" width="2.6" height="2.6" fill="none" stroke="{K}" stroke-width="0.3"/>')
+            d.add(T.text(hb["name"], "montserrat", 1.95, hx + 3.4, yb + 2.2, K, "start", 700))
 
     def block(y, title, rows, step=5.9):
         d.add(T.text(title, "montserrat", 3.0, m, y, K, "start", 900, tracking=0.12))

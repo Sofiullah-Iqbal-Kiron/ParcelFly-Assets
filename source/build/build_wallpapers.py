@@ -245,26 +245,9 @@ def fit_extent(g, box, labels, ls, ns, suffix=" Hub"):
     kx = math.cos(math.radians(23.72))
     hs = MP.hubs()
     lon0, lat1 = min(h["lon"] for h in hs), max(h["lat"] for h in hs)
-    widths = []
-    for h in hs:
-        wl = 0.0
-        if labels in ("en", "both"):
-            wl = T.advance(h["name"] + suffix, "montserrat", ls, 800)
-        if labels in ("bn", "both"):
-            wl = max(wl, T.advance(h["name_bn"] + " হাব", "mina-bold", ls * 0.86))
-        widths.append(wl)
-
     def content(sc):
-        bx = []
-        for h, wl in zip(hs, widths):
-            x, y = (h["lon"] - lon0) * kx * sc, (lat1 - h["lat"]) * sc
-            r = ns * 1.4
-            if h.get("label", "right") == "right":
-                x0, x1 = x - r, x + ns * 1.9 + wl
-            else:
-                x0, x1 = x - ns * 1.9 - wl, x + r
-            bx.append((x0, y - max(r, ls * 0.8), x1, y + max(r, ls * (1.5 if labels == "both" else 0.45))))
-        return min(b[0] for b in bx), min(b[1] for b in bx), max(b[2] for b in bx), max(b[3] for b in bx)
+        bx = [q for _, q in MP._label_boxes(sc, hs, labels, ls, ns, suffix, None, lon0, lat1)]
+        return min(q[0] for q in bx), min(q[1] for q in bx), max(q[2] for q in bx), max(q[3] for q in bx)
 
     bw, bh = box[2] - box[0], box[3] - box[1]
     lo, hi = 10.0, 1e7
