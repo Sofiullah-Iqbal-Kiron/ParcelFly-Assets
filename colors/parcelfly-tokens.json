@@ -1,0 +1,107 @@
+{
+  "color": {
+    "brand": {
+      "navy": {
+        "$type": "color",
+        "$value": "#000080",
+        "$description": "Fly Navy. Primary. Wordmark, text, dark backgrounds, one-colour logo."
+      },
+      "cobalt": {
+        "$type": "color",
+        "$value": "#00318D",
+        "$description": "Cobalt. Middle feather. Secondary dark, headings on light backgrounds."
+      },
+      "sky": {
+        "$type": "color",
+        "$value": "#0077C9",
+        "$description": "Sky Blue. Top feather. Links, highlights, taglines, secondary actions."
+      },
+      "cyan": {
+        "$type": "color",
+        "$value": "#00B5D8",
+        "$description": "Parcel Cyan. The parcel (diamond). Signature accent, on-dark highlights."
+      },
+      "aqua": {
+        "$type": "color",
+        "$value": "#00D8DB",
+        "$description": "Aqua. Lower facet. Accent, illustrations, data."
+      },
+      "mint": {
+        "$type": "color",
+        "$value": "#00EAD3",
+        "$description": "Mint. Upper facet. Accent, the brightest step of the flight gradient."
+      }
+    },
+    "neutral": {
+      "ink": {
+        "$type": "color",
+        "$value": "#0B1133",
+        "$description": "Ink. Body text, deepest backgrounds."
+      },
+      "slate": {
+        "$type": "color",
+        "$value": "#55607A",
+        "$description": "Slate. Secondary text, captions, icons."
+      },
+      "mist": {
+        "$type": "color",
+        "$value": "#DCE7F2",
+        "$description": "Mist. Borders, dividers, quiet fills."
+      },
+      "cloud": {
+        "$type": "color",
+        "$value": "#F3F8FC",
+        "$description": "Cloud. Page and card backgrounds."
+      },
+      "white": {
+        "$type": "color",
+        "$value": "#FFFFFF",
+        "$description": "White. Backgrounds, reversed logo."
+      }
+    },
+    "status": {
+      "success": {
+        "$type": "color",
+        "$value": "#0E9F6E",
+        "$description": "Delivered Green. Delivered, paid, verified."
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#F5A100",
+        "$description": "Signal Amber. Handle with care, pending, COD."
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#E0303A",
+        "$description": "Alert Red. Fragile, returned, cancelled."
+      }
+    },
+    "gradient": {
+      "flight": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "#000080",
+            "position": 0
+          },
+          {
+            "color": "#00318D",
+            "position": 0.3
+          },
+          {
+            "color": "#0077C9",
+            "position": 0.58
+          },
+          {
+            "color": "#00B5D8",
+            "position": 0.82
+          },
+          {
+            "color": "#00EAD3",
+            "position": 1.0
+          }
+        ]
+      }
+    }
+  }
+}

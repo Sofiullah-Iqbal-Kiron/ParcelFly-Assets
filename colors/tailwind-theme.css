@@ -1,0 +1,19 @@
+/* Tailwind CSS v4: paste into your global CSS after @import "tailwindcss"; */
+@theme {
+  --color-pf-navy: #000080;
+  --color-pf-cobalt: #00318D;
+  --color-pf-sky: #0077C9;
+  --color-pf-cyan: #00B5D8;
+  --color-pf-aqua: #00D8DB;
+  --color-pf-mint: #00EAD3;
+  --color-pf-ink: #0B1133;
+  --color-pf-slate: #55607A;
+  --color-pf-mist: #DCE7F2;
+  --color-pf-cloud: #F3F8FC;
+  --color-pf-white: #FFFFFF;
+  --color-pf-success: #0E9F6E;
+  --color-pf-warning: #F5A100;
+  --color-pf-danger: #E0303A;
+  --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-bangla: "Noto Sans Bengali", "Mina", ui-sans-serif, sans-serif;
+}

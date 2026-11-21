@@ -1,0 +1,18 @@
+GIMP Palette
+Name: Parcel Fly
+Columns: 6
+#
+  0   0 128	Fly Navy
+  0  49 141	Cobalt
+  0 119 201	Sky Blue
+  0 181 216	Parcel Cyan
+  0 216 219	Aqua
+  0 234 211	Mint
+ 11  17  51	Ink
+ 85  96 122	Slate
+220 231 242	Mist
+243 248 252	Cloud
+255 255 255	White
+ 14 159 110	Delivered Green
+245 161   0	Signal Amber
+224  48  58	Alert Red

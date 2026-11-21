@@ -1,0 +1,49 @@
+{
+  "hubs": [
+    {
+      "key": "bakshibazar",
+      "name": "Bakshibazar",
+      "name_bn": "বকশীবাজার",
+      "lat": 23.7223,
+      "lon": 90.39552,
+      "label": "left",
+      "geocoded": "Nominatim: Bakshibazar, অর্ফানেজ রোড, চানখারপুল, খাজে দেওয়ান, বকশীবাজার, ঢাকা, ঢাকা মহানগর, ঢাকা জেলা, ঢাকা বিভাগ, 1211, বাংলাদেশ"
+    },
+    {
+      "key": "jatrabari",
+      "name": "Jatrabari",
+      "name_bn": "যাত্রাবাড়ী",
+      "lat": 23.7094,
+      "lon": 90.43381,
+      "label": "right",
+      "geocoded": "Nominatim: যাত্রাবাড়ী, ঢাকা, ঢাকা মহানগর, ঢাকা জেলা, ঢাকা বিভাগ, 1232, বাংলাদেশ"
+    },
+    {
+      "key": "mirpur",
+      "name": "Mirpur",
+      "name_bn": "মিরপুর",
+      "lat": 23.81236,
+      "lon": 90.36409,
+      "label": "right",
+      "geocoded": "Nominatim: মিরপুর, ঢাকা, ঢাকা মহানগর, ঢাকা জেলা, ঢাকা বিভাগ, 1216, বাংলাদেশ"
+    },
+    {
+      "key": "rampura",
+      "name": "Rampura",
+      "name_bn": "রামপুরা",
+      "lat": 23.76261,
+      "lon": 90.42057,
+      "label": "right",
+      "geocoded": "Nominatim: রামপুরা, ঢাকা, ঢাকা মহানগর, ঢাকা জেলা, ঢাকা বিভাগ, 1219, বাংলাদেশ"
+    },
+    {
+      "key": "narayanganj",
+      "name": "Narayanganj",
+      "name_bn": "নারায়ণগঞ্জ",
+      "lat": 23.62367,
+      "lon": 90.49881,
+      "label": "left",
+      "geocoded": "Nominatim: নারায়ণগঞ্জ, নারায়ণগঞ্জ সদর উপজেলা, নারায়নগঞ্জ জেলা, ঢাকা বিভাগ, 1400, বাংলাদেশ"
+    }
+  ]
+}

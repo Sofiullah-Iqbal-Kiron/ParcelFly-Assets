@@ -1,0 +1,28 @@
+{
+  "icon": "./assets/images/icon.png",
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/images/adaptive-icon.png",
+      "monochromeImage": "./assets/images/adaptive-icon-monochrome.png",
+      "backgroundColor": "#00B5D8"
+    }
+  },
+  "plugins": [
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/images/splash-icon.png",
+        "imageWidth": 200,
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./assets/images/splash-icon-dark.png",
+          "backgroundColor": "#000080"
+        }
+      }
+    ]
+  ],
+  "web": {
+    "favicon": "./assets/images/favicon.png"
+  }
+}

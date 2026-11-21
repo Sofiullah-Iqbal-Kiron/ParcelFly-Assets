@@ -1,0 +1,11 @@
+/* Drop-in replacement for the brand tokens in client-frontend / manager-frontend src/app/globals.css.
+   Values are the exact logo colours expressed in OKLCH. */
+:root {
+  --brand-navy: oklch(0.271 0.188 264.1);  /* #000080 */
+  --brand-blue: oklch(0.558 0.154 249.0);  /* #0077C9 */
+  --brand-cyan: oklch(0.714 0.128 218.3);  /* #00B5D8 */
+  --brand-cobalt: oklch(0.355 0.160 261.6);  /* #00318D */
+  --brand-mint: oklch(0.841 0.150 182.4);  /* #00EAD3 */
+  --brand-aqua: oklch(0.800 0.136 196.6);  /* #00D8DB */
+  --brand-navy-foreground: oklch(0.985 0.004 228.8);
+}

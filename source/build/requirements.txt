@@ -1,0 +1,9 @@
+cairosvg
+pillow
+numpy
+fonttools
+uharfbuzz
+shapely
+segno
+pypdf
+python-docx

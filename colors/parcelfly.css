@@ -1,0 +1,28 @@
+:root {
+  /* Parcel Fly brand colours (source: brand-assets/colors) */
+  --pf-navy: #000080;  /* Fly Navy */
+  --pf-cobalt: #00318D;  /* Cobalt */
+  --pf-sky: #0077C9;  /* Sky Blue */
+  --pf-cyan: #00B5D8;  /* Parcel Cyan */
+  --pf-aqua: #00D8DB;  /* Aqua */
+  --pf-mint: #00EAD3;  /* Mint */
+  --pf-ink: #0B1133;  /* Ink */
+  --pf-slate: #55607A;  /* Slate */
+  --pf-mist: #DCE7F2;  /* Mist */
+  --pf-cloud: #F3F8FC;  /* Cloud */
+  --pf-white: #FFFFFF;  /* White */
+  --pf-success: #0E9F6E;  /* Delivered Green */
+  --pf-warning: #F5A100;  /* Signal Amber */
+  --pf-danger: #E0303A;  /* Alert Red */
+
+  /* semantic */
+  --pf-primary: var(--pf-navy);
+  --pf-primary-foreground: var(--pf-white);
+  --pf-accent: var(--pf-cyan);
+  --pf-link: var(--pf-sky);
+  --pf-text: var(--pf-ink);
+  --pf-text-muted: var(--pf-slate);
+  --pf-border: var(--pf-mist);
+  --pf-surface: var(--pf-cloud);
+  --pf-gradient-flight: linear-gradient(90deg, #000080 0%, #00318D 30%, #0077C9 58%, #00B5D8 82%, #00EAD3 100%);
+}

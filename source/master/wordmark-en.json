@@ -1,0 +1,21 @@
+{
+  "source": "Nasalization Rg (Typodermic), outlined; tracking -0.05 em",
+  "units": "logo units (1 = 1 px of the 1164 px production logo)",
+  "font_size": 248.888889,
+  "baseline": 0,
+  "cap_height": 168.000000075,
+  "x_height": 131.413333392,
+  "ascender_l": 188.408888973,
+  "descender_y": 52.764444468,
+  "ink_bbox": [
+    19.91,
+    -188.41,
+    1158.08,
+    52.76
+  ],
+  "advance": 1162.808889408,
+  "font_extents": [
+    238.186666773,
+    -65.208888918
+  ]
+}

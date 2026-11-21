@@ -1,0 +1,41 @@
+{
+  "brand": "Parcel Fly",
+  "tagline": "Always, Everywhere",
+  "brief": "Dhaka-focused courier and logistics for online sellers, food businesses and growing local brands. The logo is final and in production; this board shows the finished identity in use.",
+  "adjectives": ["fast", "careful", "dependable", "local", "modern"],
+  "criteria": "Faithful to the production logo, clean vector masters, legible at 16 px, works in one colour and in Bangla, ready for every touchpoint.",
+  "industry": "services",
+  "mockups": ["app-icon", "website", "business-card", "signage", "social", "box"],
+  "nav": ["Services", "Coverage", "Track", "Become a merchant"],
+  "brand_color": "#000080",
+  "tile_color": "#000080",
+  "greyscale": false,
+  "final": true,
+  "round": 3,
+  "deck_title": "brand kit",
+  "designer": "Parcel Fly",
+  "concepts": [
+    {
+      "name": "Parcel Fly",
+      "symbol": "../../logo/symbol/parcelfly-symbol-color.svg",
+      "lockup": "../../logo/horizontal/parcelfly-horizontal-color.svg",
+      "stacked": "../../logo/primary-stacked/parcelfly-stacked-color.svg",
+      "symbol_on_tile": "../../logo/symbol/parcelfly-symbol-ondark.svg",
+      "symbol_on_dark": "../../logo/symbol/parcelfly-symbol-ondark.svg",
+      "lockup_on_dark": "../../logo/horizontal/parcelfly-horizontal-ondark.svg",
+      "stacked_on_dark": "../../logo/primary-stacked/parcelfly-stacked-ondark.svg",
+      "idea": "A parcel given wings: three feathers carry the diamond parcel, its two facets form the arrow to the doorstep.",
+      "rationale": [
+        "Rebuilt from the production artwork on exact geometry: 256-unit parcel, 26-unit channels, 45 degree edges",
+        "Six flat colours climb from navy to mint, from pickup to delivery; one-colour and on-dark versions included",
+        "Bangla lockup in Mina Bold with matched stem weight; app icons use a flight crop that reads at 16 px"
+      ]
+    }
+  ],
+  "recommendation": "Use the stacked logo as the primary signature, the horizontal lockup in headers and the flight-crop icon wherever space is small.",
+  "next_steps": [
+    "Replace app and web icons in the four apps with icons/app/<app>",
+    "Align the web colour tokens with colors/globals-oklch-snippet.css",
+    "Run a trademark search and proof CMYK/Pantone values before large print runs"
+  ]
+}
